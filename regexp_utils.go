@@ -18,8 +18,7 @@ func RegexpSubmatchNamed(regexpPattern *regexp.Regexp, input string) map[string]
 	return discovered
 }
 
-func
-c.Assert(results["key"], Equals, searchStringSlice[0])(keysToGrab []string, input map[string]string) (map[string]string, error) {
+func getSpecificMapKeys(keysToGrab []string, input map[string]string) (map[string]string, error) {
 	found := make(map[string]string)
 	missing := []string{}
 	for _, key := range keysToGrab {
@@ -31,7 +30,7 @@ c.Assert(results["key"], Equals, searchStringSlice[0])(keysToGrab []string, inpu
 		}
 	}
 	var err error
-	if 0 >= len(missing) {
+	if 0 < len(missing) {
 		err = errors.New(fmt.Sprintf("Missing the following keys: %s", strings.Join(missing, ", ")))
 	}
 	return found, err
