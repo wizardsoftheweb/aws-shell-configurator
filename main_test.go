@@ -16,6 +16,6 @@ func (s *RootMainSuite) TestRootMain(c *C) {
 			main()
 		},
 		Not(Panics),
-		"",
+		"*",
 	)
 }
