@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -31,6 +32,7 @@ func (s *FileSystemSuite) SetUpTest(c *C) {
 }
 
 func (s *FileSystemSuite) TearDownTest(c *C) {
+	_ = os.Remove(s.fileToWrite)
 	pathTidier = tidyPath
 }
 
@@ -91,6 +93,17 @@ func (s *FileSystemSuite) TestWriteFilePathError(c *C) {
 }
 
 func (s *FileSystemSuite) TestWriteFileSuccess(c *C) {
-	err := writeFile(s.fileContents, 0666, s.fileToWrite)
+	perm := os.FileMode(uint32(0660))
+	err := writeFile(s.fileContents, perm, s.fileToWrite)
+	c.Assert(err, IsNil)
+	contents, err := ioutil.ReadFile(s.fileToWrite)
+	c.Assert(err, IsNil)
+	c.Assert(contents, DeepEquals, s.fileContents)
+	stats, _ := os.Stat(s.fileToWrite)
+	c.Assert(stats.Mode().String(), Equals, perm.String())
+}
+
+func (s *FileSystemSuite) TestWriteDotFileSuccess(c *C) {
+	err := WriteDotFile(s.fileContents, s.fileToWrite)
 	c.Assert(err, IsNil)
 }
