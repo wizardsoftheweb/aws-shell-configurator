@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
+)
 
 var SettingsInCredentialsFile = []string{
 	"aws_access_key_id",
@@ -11,6 +16,27 @@ var SettingsInCredentialsFile = []string{
 type AwsProfile struct {
 	Profile  string                 `json:"profile"`
 	Settings map[string]*AwsSetting `json:"settings"`
+}
+
+func NewAwsProfile() *AwsProfile {
+	var profile AwsProfile
+	contents, _ := ioutil.ReadFile("default-aws-settings.json")
+	_ = json.Unmarshal(contents, &profile)
+	return &profile
+}
+
+func (p *AwsProfile) isActiveProfile() bool {
+	return os.Getenv("AWS_PROFILE") == p.Profile
+}
+
+func (p *AwsProfile) updateFromEnvironment() {
+	if p.isActiveProfile() {
+		for key, setting := range p.Settings {
+			if "" != setting.EnvironmentVariable {
+				p.Settings[key].Set(GetEnvWithDefault(setting.EnvironmentVariable, setting.Value))
+			}
+		}
+	}
 }
 
 func (p *AwsProfile) compileCredentialsFile(profile string, values map[string]string) string {
@@ -32,7 +58,7 @@ func (p *AwsProfile) compileBaseConfigFile(profile string, values map[string]str
 	return output
 }
 
-func (p *AwsProfile) WriteProfile() error {
+func (p *AwsProfile) ExtractCredentialsSettings() map[string]string {
 	credentials := make(map[string]string)
 	for _, key := range SettingsInCredentialsFile {
 		setting, ok := p.Settings[key]
@@ -41,6 +67,11 @@ func (p *AwsProfile) WriteProfile() error {
 		}
 		delete(p.Settings, key)
 	}
+	return credentials
+}
+
+func (p *AwsProfile) compileProfile() error {
+	credentials := p.ExtractCredentialsSettings()
 	config := make(map[string]string)
 	for key, setting := range p.Settings {
 		if "" != setting.Value {
@@ -52,4 +83,16 @@ func (p *AwsProfile) WriteProfile() error {
 	fmt.Println(credentialsFile)
 	fmt.Println(configFile)
 	return nil
+}
+
+func (p *AwsProfile) UpdateSettings(newSettings map[string]*AwsSetting) {
+	for key, value := range newSettings {
+		p.Settings[key] = value
+	}
+}
+
+func (p *AwsProfile) UpdateSettingValues(newValues map[string]string) {
+	for key, value := range newValues {
+		p.Settings[key].Value = value
+	}
 }
