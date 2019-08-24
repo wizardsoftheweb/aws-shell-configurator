@@ -12,7 +12,7 @@ type RootMainSuite struct {
 
 var _ = Suite(&RootMainSuite{
 	BaseSuite{
-		SharedErrorMessage: "main error",
+		sharedErrorMessage: "main error",
 	},
 })
 
@@ -29,9 +29,9 @@ func (s *RootMainSuite) TestRootMain(c *C) {
 func (s *RootMainSuite) TestNilErrorOrPanic(c *C) {
 	c.Assert(
 		func() {
-			nilErrorOrPanic(errors.New(s.SharedErrorMessage))
+			nilErrorOrPanic(errors.New(s.sharedErrorMessage))
 		},
 		PanicMatches,
-		s.SharedErrorMessage,
+		s.sharedErrorMessage,
 	)
 }

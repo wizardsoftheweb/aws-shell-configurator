@@ -10,19 +10,19 @@ import (
 func Test(t *testing.T) { TestingT(t) }
 
 type BaseSuite struct {
-	SharedErrorMessage string
-	WorkingDirectory   string
+	sharedErrorMessage string
+	workingDirectory   string
 }
 
 var _ = Suite(&BaseSuite{})
 
-var currentWorkingDirectory, _ = os.Getwd()
+var currentworkingDirectory, _ = os.Getwd()
 
 func (s *BaseSuite) SetUpSuite(c *C) {
-	s.WorkingDirectory = c.MkDir()
-	_ = os.Chdir(s.WorkingDirectory)
+	s.workingDirectory = c.MkDir()
+	_ = os.Chdir(s.workingDirectory)
 }
 
 func (s *BaseSuite) TearDownSuite(c *C) {
-	_ = os.Chdir(currentWorkingDirectory)
+	_ = os.Chdir(currentworkingDirectory)
 }
