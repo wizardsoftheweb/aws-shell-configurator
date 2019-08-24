@@ -5,7 +5,7 @@ type DotFileSection struct {
 	Values *map[string]string
 }
 
-func NewSection(title string, values *map[string]string) *DotFileSection {
+func NewDotFileSection(title string, values *map[string]string) *DotFileSection {
 	return &DotFileSection{
 		Title:  title,
 		Values: values,
