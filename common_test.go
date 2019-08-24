@@ -8,6 +8,8 @@ import (
 
 func Test(t *testing.T) { TestingT(t) }
 
-type BaseSuite struct{}
+type BaseSuite struct {
+	SharedErrorMessage string
+}
 
 var _ = Suite(&BaseSuite{})
