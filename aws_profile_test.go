@@ -68,3 +68,17 @@ func (s *AwsProfileSuite) TestCompileCredentialsFileDefault(c *C) {
 	output := s.profile.compileCredentialsFile(profileName, s.profile.ExtractCredentialsSettings())
 	c.Assert(output, Equals, fmt.Sprintf("[%s]\n%s = %s\n", profileName, s.settingsKey, s.envValue))
 }
+
+func (s *AwsProfileSuite) TestCompileBaseConfigFileDefault(c *C) {
+	profileName := "default"
+	s.profile.Settings[s.settingsKey].Set(s.envValue)
+	output := s.profile.compileBaseConfigFile(profileName, s.profile.ExtractCredentialsSettings())
+	c.Assert(output, Equals, fmt.Sprintf("[%s]\n%s = %s\n", profileName, s.settingsKey, s.envValue))
+}
+
+func (s *AwsProfileSuite) TestCompileBaseConfigFileNotDefault(c *C) {
+	profileName := "not default"
+	s.profile.Settings[s.settingsKey].Set(s.envValue)
+	output := s.profile.compileBaseConfigFile(profileName, s.profile.ExtractCredentialsSettings())
+	c.Assert(output, Equals, fmt.Sprintf("[profile \"%s\"]\n%s = %s\n", profileName, s.settingsKey, s.envValue))
+}
