@@ -82,3 +82,10 @@ func (s *AwsProfileSuite) TestCompileBaseConfigFileNotDefault(c *C) {
 	output := s.profile.compileBaseConfigFile(profileName, s.profile.ExtractCredentialsSettings())
 	c.Assert(output, Equals, fmt.Sprintf("[profile \"%s\"]\n%s = %s\n", profileName, s.settingsKey, s.envValue))
 }
+
+func (s *AwsProfileSuite) TestExtractCredentialSettings(c *C) {
+	s.profile.Settings[s.settingsKey].Set(s.envValue)
+	credentials := s.profile.ExtractCredentialsSettings()
+	c.Assert(len(s.profile.Settings), Equals, 0)
+	c.Assert(len(credentials), Equals, 1)
+}
