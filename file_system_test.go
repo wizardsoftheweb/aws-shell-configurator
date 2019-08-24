@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
-	"runtime"
 
 	"github.com/pkg/errors"
 	. "gopkg.in/check.v1"
@@ -13,14 +13,18 @@ import (
 
 type FileSystemSuite struct {
 	BaseSuite
-	fileContents []byte
-	fileToWrite  string
+	fileContents  []byte
+	fileToWrite   string
+	homeDirectory string
 }
 
+var currentUser, _ = user.Current()
+
 var _ = Suite(&FileSystemSuite{
-	BaseSuite{sharedErrorMessage: "shared file error"},
-	[]byte("test data"),
-	"",
+	BaseSuite:     BaseSuite{sharedErrorMessage: "shared file error"},
+	fileContents:  []byte("test data"),
+	fileToWrite:   "",
+	homeDirectory: currentUser.HomeDir,
 })
 
 func (s *FileSystemSuite) BrokenPathTidier(input ...string) (string, error) {
@@ -41,6 +45,8 @@ func (s *FileSystemSuite) TestTidyPath(c *C) {
 		{"/", "/"},
 		{"/some/dir", "/some", "dir"},
 		{fmt.Sprintf("%s/%s", s.workingDirectory, "some/dir"), "some", "dir"},
+		{s.homeDirectory, "~"},
+		{filepath.Join(s.homeDirectory, "test"), "~/test"},
 	}
 	for _, value := range tidyPathData {
 		result, err := tidyPath(value[1:]...)
@@ -80,8 +86,7 @@ func (s *FileSystemSuite) TestLoadFileThatDoesntExist(c *C) {
 }
 
 func (s *FileSystemSuite) TestLoadFileNonEmpty(c *C) {
-	_, filename, _, _ := runtime.Caller(0)
-	contents, err := LoadFile(filename)
+	contents, err := LoadFile(s.currentFilename)
 	c.Assert(err, IsNil)
 	c.Assert(contents, Not(Equals), []byte{})
 }
