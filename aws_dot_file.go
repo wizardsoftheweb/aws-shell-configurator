@@ -68,9 +68,6 @@ func (f *AwsDotFile) checkForKeyValue(line string) (string, string) {
 	if 1 != len(matches) {
 		return "", ""
 	}
-	if 3 != len(matches[0]) {
-		return "", ""
-	}
 	return matches[0][1], matches[0][2]
 }
 
