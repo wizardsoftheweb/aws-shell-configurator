@@ -13,7 +13,62 @@
     "output": {
       "env": "AWS_DEFAULT_OUTPUT",
       "value": "json",
-      "allowed": ["json", "table", "text"]
+      "allowed": [
+        "json",
+        "table",
+        "text"
+      ]
+    },
+    "role_arn": {
+      "env": "AWS_ROLE_ARN"
+    },
+    "source_profile": {},
+    "credential_source": {
+      "allowed": [
+        "Environment",
+        "Ec2InstanceMetadata",
+        "EcsContainer"
+      ]
+    },
+    "mfa_serial": {},
+    "duration_seconds": {
+      "value": "3600"
+    },
+    "external_id": {},
+    "ca_bundle": {
+      "env": "AWS_CA_BUNDLE"
+    },
+    "cli_follow_urlparam": {
+      "value": "true",
+      "allowed": [
+        "true",
+        "false"
+      ]
+    },
+    "cli_timestamp_format": {
+      "value": "none",
+      "allowed": "iso8601"
+    },
+    "credential_process": {},
+    "web_identity_token_file": {
+      "env": "AWS_WEB_IDENTITY_TOKEN_FILE"
+    },
+    "parameter_validation": {
+      "value": "true",
+      "allowed": [
+        "true",
+        "false"
+      ]
+    },
+    "region": {
+      "env": "AWS_DEFAULT_REGION"
+    },
+    "tcp_keepalive": {
+      "value": "false",
+      "allowed": [
+        "true",
+        "false"
+      ]
     }
   }
 }

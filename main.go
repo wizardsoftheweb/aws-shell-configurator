@@ -10,6 +10,11 @@ func main() {
 	// for _, profile := range allProfiles {
 	// 	_ = profile.compileProfile()
 	// }
+	newProfile := NewAwsProfile()
+	for key, setting := range newProfile.Settings {
+		fmt.Printf("%s: %#v\n", key, setting)
+	}
+	_ = newProfile.compileProfile()
 }
 
 func nilErrorOrPanic(err error) {
