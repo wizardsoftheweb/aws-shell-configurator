@@ -4,7 +4,7 @@ import (
 	"regexp"
 )
 
-func RegexpSubmatchNamed(regexpPattern regexp.Regexp, input string) map[string]string {
+func RegexpSubmatchNamed(regexpPattern *regexp.Regexp, input string) map[string]string {
 	discovered := make(map[string]string)
 	match := regexpPattern.FindStringSubmatch(input)
 	keys := regexpPattern.SubexpNames()
