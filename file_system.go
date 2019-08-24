@@ -3,11 +3,28 @@ package main
 import (
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
+	"strings"
 )
 
 func tidyPath(pathComponents ...string) (string, error) {
-	return filepath.Abs(filepath.Join(pathComponents...))
+	rawPath := filepath.Join(pathComponents...)
+	currentUser, err := user.Current()
+	if nil != err {
+		return "", err
+	}
+	homeDirectory := currentUser.HomeDir
+	if "~" == rawPath {
+		return homeDirectory, nil
+	} else if strings.HasPrefix(rawPath, "~/") {
+		return filepath.Join(
+				homeDirectory,
+				strings.TrimPrefix(rawPath, "~/"),
+			),
+			nil
+	}
+	return filepath.Abs(rawPath)
 }
 
 var (
