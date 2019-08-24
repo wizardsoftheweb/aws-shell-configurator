@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	. "gopkg.in/check.v1"
@@ -8,12 +9,13 @@ import (
 
 type AwsProfileSuite struct {
 	BaseSuite
-	profile         AwsProfile
-	profileWasSet   bool
-	existingProfile string
-	envVariable     string
-	envValue        string
-	settingsKey     string
+	profile          AwsProfile
+	profileWasSet    bool
+	existingProfile  string
+	envVariable      string
+	envValue         string
+	settingsKey      string
+	credsSettingsKey string
 }
 
 var _ = Suite(&AwsProfileSuite{})
@@ -58,4 +60,11 @@ func (s *AwsProfileSuite) TestUpdateFromEnvironment(c *C) {
 	s.profile.updateFromEnvironment()
 	c.Assert(s.profile.Settings[s.settingsKey].Value, Equals, s.envValue)
 
+}
+
+func (s *AwsProfileSuite) TestCompileCredentialsFileDefault(c *C) {
+	profileName := "default"
+	s.profile.Settings[s.settingsKey].Set(s.envValue)
+	output := s.profile.compileCredentialsFile(profileName, s.profile.ExtractCredentialsSettings())
+	c.Assert(output, Equals, fmt.Sprintf("[%s]\n%s = %s\n", profileName, s.settingsKey, s.envValue))
 }
