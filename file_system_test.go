@@ -93,7 +93,7 @@ func (s *FileSystemSuite) TestWriteFilePathError(c *C) {
 }
 
 func (s *FileSystemSuite) TestWriteFileSuccess(c *C) {
-	perm := os.FileMode(uint32(0660))
+	perm := os.FileMode(uint32(0640))
 	err := writeFile(s.fileContents, perm, s.fileToWrite)
 	c.Assert(err, IsNil)
 	contents, err := ioutil.ReadFile(s.fileToWrite)
