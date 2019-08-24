@@ -33,3 +33,11 @@ func (s *RegexpUtilsSuite) TestGetSpecificKeysSuccess(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(results["one"], Equals, input["one"])
 }
+
+func (s *RegexpUtilsSuite) TestGetSpecificKeysMissingKey(c *C) {
+	input := make(map[string]string)
+	input["one"] = "two"
+	keys := []string{"qqq"}
+	_, err := getSpecificMapKeys(keys, input)
+	c.Assert(err, ErrorMatches, "missing the following keys.*")
+}
