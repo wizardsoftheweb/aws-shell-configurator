@@ -102,3 +102,17 @@ func (s *AwsProfileSuite) TestCompileProfile(c *C) {
 		IsNil,
 	)
 }
+
+func (s *AwsProfileSuite) TestUpdateSettings(c *C) {
+	c.Assert(s.profile.Settings[s.settingsKey].Value, Not(Equals), s.envValue)
+	s.profile.UpdateSettings(map[string]*AwsSetting{
+		s.settingsKey: {Value: s.envValue},
+	})
+	c.Assert(s.profile.Settings[s.settingsKey].Value, Equals, s.envValue)
+}
+
+func (s *AwsProfileSuite) TestUpdateSettingValues(c *C) {
+	c.Assert(s.profile.Settings[s.settingsKey].Value, Not(Equals), s.envValue)
+	s.profile.UpdateSettingValues(map[string]string{s.settingsKey: s.envValue})
+	c.Assert(s.profile.Settings[s.settingsKey].Value, Equals, s.envValue)
+}
