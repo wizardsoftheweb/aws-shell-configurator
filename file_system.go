@@ -25,13 +25,12 @@ func EnsureDirectoryExists(pathComponents ...string) error {
 	return err
 }
 
-func LoadFile(pathComponents ...string) (string, error) {
+func LoadFile(pathComponents ...string) ([]byte, error) {
 	combinedPath, err := pathTidier(pathComponents...)
 	if nil != err {
-		return "", err
+		return []byte{}, err
 	}
-	rawContents, err := ioutil.ReadFile(combinedPath)
-	return string(rawContents), err
+	return ioutil.ReadFile(combinedPath)
 }
 
 func writeFile(contents []byte, permissions os.FileMode, pathComponents ...string) error {

@@ -83,7 +83,7 @@ func (s *FileSystemSuite) TestLoadFileNonEmpty(c *C) {
 	_, filename, _, _ := runtime.Caller(0)
 	contents, err := LoadFile(filename)
 	c.Assert(err, IsNil)
-	c.Assert(contents, Not(Equals), "")
+	c.Assert(contents, Not(Equals), []byte{})
 }
 
 func (s *FileSystemSuite) TestWriteFilePathError(c *C) {
