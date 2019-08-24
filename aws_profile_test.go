@@ -86,8 +86,8 @@ func (s *AwsProfileSuite) TestCompileBaseConfigFileNotDefault(c *C) {
 func (s *AwsProfileSuite) TestExtractCredentialSettings(c *C) {
 	s.profile.Settings[s.settingsKey].Set(s.envValue)
 	credentials := s.profile.ExtractCredentialsSettings()
-	c.Assert(len(s.profile.Settings), Equals, 0)
-	c.Assert(len(credentials), Equals, 1)
+	c.Assert(s.profile.Settings, HasLen, 0)
+	c.Assert(credentials, HasLen, 1)
 }
 
 func (s *AwsProfileSuite) TestConvertFromSettingToMap(c *C) {
