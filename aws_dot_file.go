@@ -28,12 +28,14 @@ type AwsDotFile struct {
 	CurrentPath         string
 	RawContents         []byte
 	Contents            []string
+	Profiles            map[string]*AwsProfile
 }
 
 func NewDotFile(defaultPath, envVariable string) *AwsDotFile {
 	dotFile := &AwsDotFile{
 		DefaultPath:         defaultPath,
 		EnvironmentVariable: envVariable,
+		Profiles:            make(map[string]*AwsProfile),
 	}
 	dotFile.discoverLocation()
 	return dotFile
@@ -71,27 +73,34 @@ func (f *AwsDotFile) checkForKeyValue(line string) (string, string) {
 	return matches[0][1], matches[0][2]
 }
 
-func (f *AwsDotFile) parse() map[string]*AwsProfile {
-	profiles := make(map[string]*AwsProfile)
-	var currentProfile *AwsProfile
-	for _, line := range f.Contents {
-		profileName := f.checkForTitle(line)
-		if "" != profileName {
-			currentProfile = NewAwsProfile()
-			currentProfile.Profile = profileName
-			profiles[profileName] = currentProfile
-		}
-		if nil != currentProfile {
-			key, value := f.checkForKeyValue(line)
-			if "" != key {
-				_, ok := currentProfile.Settings[key]
-				if ok {
-					currentProfile.Settings[key].Set(value)
-				}
+func (f *AwsDotFile) parseTitle(line string, profileName *string) {
+	parsedName := f.checkForTitle(line)
+	if "" != parsedName {
+		*profileName = parsedName
+		newProfile := NewAwsProfile()
+		newProfile.Profile = *profileName
+		f.Profiles[*profileName] = newProfile
+	}
+}
+
+func (f *AwsDotFile) parseKeyValue(line string, profileName string) {
+	if nil != f.Profiles[profileName] {
+		key, value := f.checkForKeyValue(line)
+		if "" != key {
+			_, ok := f.Profiles[profileName].Settings[key]
+			if ok {
+				f.Profiles[profileName].Settings[key].Set(value)
 			}
 		}
 	}
-	return profiles
+}
+
+func (f *AwsDotFile) parse() {
+	var profileName string
+	for _, line := range f.Contents {
+		f.parseTitle(line, &profileName)
+		f.parseKeyValue(line, profileName)
+	}
 }
 
 func (f *AwsDotFile) LoadAndParse() (map[string]*AwsProfile, error) {
@@ -100,7 +109,8 @@ func (f *AwsDotFile) LoadAndParse() (map[string]*AwsProfile, error) {
 		return nil, err
 	}
 	f.tidyContents()
-	return f.parse(), nil
+	f.parse()
+	return f.Profiles, nil
 }
 
 func MergeConfigAndCredentialsProfiles(configProfiles, credentialsProfiles map[string]*AwsProfile) map[string]*AwsProfile {
