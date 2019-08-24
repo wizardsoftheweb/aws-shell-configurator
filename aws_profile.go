@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"runtime"
 )
 
 var SettingsInCredentialsFile = []string{
@@ -20,7 +22,13 @@ type AwsProfile struct {
 
 func NewAwsProfile() *AwsProfile {
 	var profile AwsProfile
-	contents, _ := ioutil.ReadFile("default-aws-settings.json")
+	_, filename, _, _ := runtime.Caller(0)
+	contents, _ := ioutil.ReadFile(
+		filepath.Join(
+			filepath.Dir(filename),
+			"default-aws-settings.json",
+		),
+	)
 	_ = json.Unmarshal(contents, &profile)
 	return &profile
 }
