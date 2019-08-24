@@ -12,11 +12,23 @@ import (
 
 type FileSystemSuite struct {
 	BaseSuite
+	fileContents []byte
+	fileToWrite  string
 }
 
 var _ = Suite(&FileSystemSuite{
 	BaseSuite{SharedErrorMessage: "shared file error"},
+	[]byte("test data"),
+	"",
 })
+
+func (s *FileSystemSuite) BrokenPathTidier(input ...string) (string, error) {
+	return "", errors.New(s.SharedErrorMessage)
+}
+
+func (s *FileSystemSuite) SetUpTest(c *C) {
+	s.fileToWrite = filepath.Join(s.WorkingDirectory, "test.file")
+}
 
 func (s *FileSystemSuite) TearDownTest(c *C) {
 	pathTidier = tidyPath
@@ -54,6 +66,12 @@ func (s *FileSystemSuite) TestEnsureDirectoryExistsCreatesDirectories(c *C) {
 	c.Assert(os.IsNotExist(err), Equals, false)
 }
 
+func (s *FileSystemSuite) TestLoadFilePathError(c *C) {
+	pathTidier = s.BrokenPathTidier
+	_, err := LoadFile(s.WorkingDirectory)
+	c.Assert(err, ErrorMatches, s.SharedErrorMessage)
+}
+
 func (s *FileSystemSuite) TestLoadFileThatDoesntExist(c *C) {
 	_, err := LoadFile(filepath.Join(s.WorkingDirectory, "random", "file"))
 	c.Assert(os.IsNotExist(err), Equals, true)
@@ -66,10 +84,13 @@ func (s *FileSystemSuite) TestLoadFileNonEmpty(c *C) {
 	c.Assert(contents, Not(Equals), "")
 }
 
-func (s *FileSystemSuite) TestLoadFilePathError(c *C) {
-	pathTidier = func(input ...string) (string, error) {
-		return "", errors.New(s.SharedErrorMessage)
-	}
-	_, err := LoadFile(s.WorkingDirectory)
+func (s *FileSystemSuite) TestWriteFilePathError(c *C) {
+	pathTidier = s.BrokenPathTidier
+	err := writeFile(s.fileContents, 0600, s.WorkingDirectory)
 	c.Assert(err, ErrorMatches, s.SharedErrorMessage)
+}
+
+func (s *FileSystemSuite) TestWriteFileSuccess(c *C) {
+	err := writeFile(s.fileContents, 0666, s.fileToWrite)
+	c.Assert(err, IsNil)
 }
