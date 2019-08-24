@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"testing"
 
 	. "gopkg.in/check.v1"
@@ -17,4 +18,5 @@ var _ = Suite(&BaseSuite{})
 
 func (s *BaseSuite) SetUpSuite(c *C) {
 	s.WorkingDirectory = c.MkDir()
+	_ = os.Chdir(s.WorkingDirectory)
 }
