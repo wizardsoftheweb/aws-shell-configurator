@@ -89,3 +89,16 @@ func (s *AwsProfileSuite) TestExtractCredentialSettings(c *C) {
 	c.Assert(len(s.profile.Settings), Equals, 0)
 	c.Assert(len(credentials), Equals, 1)
 }
+
+func (s *AwsProfileSuite) TestConvertFromSettingToMap(c *C) {
+	s.profile.Settings[s.settingsKey].Set(s.envValue)
+	config := s.profile.convertFromSettingToMap()
+	c.Assert(len(config), Equals, len(s.profile.Settings))
+}
+
+func (s *AwsProfileSuite) TestCompileProfile(c *C) {
+	c.Assert(
+		s.profile.compileProfile(),
+		IsNil,
+	)
+}

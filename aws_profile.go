@@ -78,14 +78,19 @@ func (p *AwsProfile) ExtractCredentialsSettings() map[string]string {
 	return credentials
 }
 
-func (p *AwsProfile) compileProfile() error {
-	credentials := p.ExtractCredentialsSettings()
+func (p *AwsProfile) convertFromSettingToMap() map[string]string {
 	config := make(map[string]string)
 	for key, setting := range p.Settings {
 		if "" != setting.Value {
 			config[key] = setting.Value
 		}
 	}
+	return config
+}
+
+func (p *AwsProfile) compileProfile() error {
+	credentials := p.ExtractCredentialsSettings()
+	config := p.convertFromSettingToMap()
 	credentialsFile := p.compileCredentialsFile(p.Profile, credentials)
 	configFile := p.compileBaseConfigFile(p.Profile, config)
 	fmt.Println(credentialsFile)
