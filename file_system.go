@@ -10,10 +10,7 @@ import (
 
 func tidyPath(pathComponents ...string) (string, error) {
 	rawPath := filepath.Join(pathComponents...)
-	currentUser, err := user.Current()
-	if nil != err {
-		return "", err
-	}
+	currentUser, _ := user.Current()
 	homeDirectory := currentUser.HomeDir
 	if "~" == rawPath {
 		return homeDirectory, nil
