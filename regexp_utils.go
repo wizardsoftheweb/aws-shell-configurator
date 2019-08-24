@@ -31,7 +31,7 @@ func getSpecificMapKeys(keysToGrab []string, input map[string]string) (map[strin
 	}
 	var err error
 	if 0 < len(missing) {
-		err = errors.New(fmt.Sprintf("Missing the following keys: %s", strings.Join(missing, ", ")))
+		err = errors.New(fmt.Sprintf("missing the following keys: %s", strings.Join(missing, ", ")))
 	}
 	return found, err
 }
