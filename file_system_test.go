@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"runtime"
 
 	"github.com/pkg/errors"
 	. "gopkg.in/check.v1"
@@ -87,8 +86,7 @@ func (s *FileSystemSuite) TestLoadFileThatDoesntExist(c *C) {
 }
 
 func (s *FileSystemSuite) TestLoadFileNonEmpty(c *C) {
-	_, filename, _, _ := runtime.Caller(0)
-	contents, err := LoadFile(filename)
+	contents, err := LoadFile(s.currentFilename)
 	c.Assert(err, IsNil)
 	c.Assert(contents, Not(Equals), []byte{})
 }
