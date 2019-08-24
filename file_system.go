@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -15,4 +16,13 @@ func EnsureDirectoryExists(pathComponents ...string) error {
 		err = os.MkdirAll(combinedPath, os.ModePerm)
 	}
 	return err
+}
+
+func LoadFile(pathComponents ...string) (string, error) {
+	combinedPath, err := tidyPath(pathComponents...)
+	if nil != err {
+		return "", err
+	}
+	rawContents, err := ioutil.ReadFile(combinedPath)
+	return string(rawContents), err
 }
